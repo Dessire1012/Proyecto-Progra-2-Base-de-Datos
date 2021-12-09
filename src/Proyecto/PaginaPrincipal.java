@@ -8,6 +8,7 @@ package Proyecto;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -99,6 +100,11 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         jButton5 = new javax.swing.JButton();
         jScrollPane5 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        jDialog5_CrearTabla = new javax.swing.JDialog();
+        jLabel15 = new javax.swing.JLabel();
+        jLabel16 = new javax.swing.JLabel();
+        jButton6 = new javax.swing.JButton();
+        jTextField_nombreTabla = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTree_Bases = new javax.swing.JTree();
         jPanel1 = new javax.swing.JPanel();
@@ -385,24 +391,31 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 .addContainerGap(33, Short.MAX_VALUE))
         );
 
+        jDialog4_EliminarUsuario.setTitle("Eliminar Usuario");
+
         jLabel14.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel14.setText("Eliminar Usuarios");
 
         jButton5.setText("Eliminar");
+        jButton5.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton5MouseClicked(evt);
+            }
+        });
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null},
+                {null, null},
+                {null, null},
+                {null, null}
             },
             new String [] {
-                "Nombre", "Contraseña", "Permisos"
+                "Nombre", "Contraseña"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -439,6 +452,57 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 .addGap(29, 29, 29)
                 .addComponent(jButton5)
                 .addContainerGap(22, Short.MAX_VALUE))
+        );
+
+        jLabel15.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel15.setText("Crear Tabla");
+
+        jLabel16.setText("Nombre de la Tabla:");
+
+        jButton6.setText("Aceptar");
+        jButton6.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton6MouseClicked(evt);
+            }
+        });
+
+        jTextField_nombreTabla.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jTextField_nombreTablaActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jDialog5_CrearTablaLayout = new javax.swing.GroupLayout(jDialog5_CrearTabla.getContentPane());
+        jDialog5_CrearTabla.getContentPane().setLayout(jDialog5_CrearTablaLayout);
+        jDialog5_CrearTablaLayout.setHorizontalGroup(
+            jDialog5_CrearTablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog5_CrearTablaLayout.createSequentialGroup()
+                .addGroup(jDialog5_CrearTablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jDialog5_CrearTablaLayout.createSequentialGroup()
+                        .addGap(160, 160, 160)
+                        .addComponent(jButton6))
+                    .addGroup(jDialog5_CrearTablaLayout.createSequentialGroup()
+                        .addGap(36, 36, 36)
+                        .addGroup(jDialog5_CrearTablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel16)
+                            .addComponent(jTextField_nombreTabla, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jDialog5_CrearTablaLayout.createSequentialGroup()
+                        .addGap(130, 130, 130)
+                        .addComponent(jLabel15)))
+                .addContainerGap(43, Short.MAX_VALUE))
+        );
+        jDialog5_CrearTablaLayout.setVerticalGroup(
+            jDialog5_CrearTablaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog5_CrearTablaLayout.createSequentialGroup()
+                .addGap(37, 37, 37)
+                .addComponent(jLabel15)
+                .addGap(41, 41, 41)
+                .addComponent(jLabel16)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jTextField_nombreTabla, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
+                .addComponent(jButton6)
+                .addGap(44, 44, 44))
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -624,16 +688,16 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
+                        .addGap(11, 11, 11)
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 238, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, 45, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 274, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jButton4)
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE))
                     .addComponent(jScrollPane1))
                 .addContainerGap())
         );
@@ -892,7 +956,6 @@ public class PaginaPrincipal extends javax.swing.JFrame {
     private void jTree_BasesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree_BasesMouseClicked
         if (evt.isMetaDown()) {
             //seleccionar un nodo con click derecho
-
             int row = jTree_Bases.getClosestRowForLocation(
                     evt.getX(), evt.getY());
             jTree_Bases.setSelectionRow(row);
@@ -928,7 +991,6 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                                     directorios.remove(i);
                                 }
                             }
-
                         } else {
                             JOptionPane.showMessageDialog(this, "Usted no tiene permiso para borrar la Base");
                         }
@@ -946,6 +1008,11 @@ public class PaginaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        //ABRIR VENTANA DE CREAR TABLA
+        jDialog5_CrearTabla.pack();
+        jDialog5_CrearTabla.setLocationRelativeTo(this);
+        jDialog5_CrearTabla.setModal(true);
+        jDialog5_CrearTabla.setVisible(true);
 
     }//GEN-LAST:event_jMenuItem2ActionPerformed
 
@@ -961,31 +1028,110 @@ public class PaginaPrincipal extends javax.swing.JFrame {
 
     private void jMenuItem4_EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem4_EliminarActionPerformed
         //ABRIR VENTANA DE ELIMINAR USUARIO
-
-        jDialog4_EliminarUsuario.pack();
-        jDialog4_EliminarUsuario.setLocationRelativeTo(this);
-        jDialog4_EliminarUsuario.setModal(true);
-        jDialog4_EliminarUsuario.setVisible(true);
-
         adminD.cargarArchivo();
+        boolean permiso = false;
+        DefaultTableModel tablaM = (DefaultTableModel) jTable1.getModel();
+        tablaM.setRowCount(0);
 
         for (Directorios drctr : adminD.getListaDir()) {
             if (drctr.getDirectorio().getName().equals(jLabel13.getText())) {
                 for (Usuarios us : drctr.getListaU()) {
+                    Object[] newrow = {us.getNombre(), us.getContraseña()};
+
+                    tablaM.addRow(newrow);
+
                     if (jLabel12.getText().equals(us.getNombre())) {
                         if (us.isGestionUsuarios() == true) {
-                            JOptionPane.showMessageDialog(this, drctr.getListaU());
-
-                            DefaultTableModel tablaM = (DefaultTableModel) jTable1.getModel();
-                        } else {
-                            JOptionPane.showMessageDialog(this, "Usted no tiene permiso para eliminar usuarios");
+                            permiso = true;
                         }
                     }
                 }
             }
         }
 
+        if (permiso) {
+            jDialog4_EliminarUsuario.pack();
+            jDialog4_EliminarUsuario.setLocationRelativeTo(this);
+            jDialog4_EliminarUsuario.setModal(true);
+            jDialog4_EliminarUsuario.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Usted no tiene permiso para eliminar usuarios");
+        }
+
+
     }//GEN-LAST:event_jMenuItem4_EliminarActionPerformed
+
+    private void jButton5MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton5MouseClicked
+        // ELIMINAR USUARIO
+        if (jTable1.getSelectedRow() >= 0) {
+            String nombre = (String) (jTable1.getValueAt(jTable1.getSelectedRow(), 0));
+            String contraseña = (String) (jTable1.getValueAt(jTable1.getSelectedRow(), 1));
+
+            for (Directorios drctr : adminD.getListaDir()) {
+                if (drctr.getDirectorio().getName().equals(jLabel13.getText())) {
+                    for (Usuarios us : drctr.getListaU()) {
+                        if (nombre.equals(us.getNombre()) && contraseña.equals(us.getContraseña())) {
+                            for (int i = 0; i < directorios.size(); i++) {
+                                if (directorios.get(i).toString().equals(drctr.toString())) {
+                                    for (int j = 0; j < drctr.getListaU().size(); j++) {
+                                        if (drctr.getListaU().get(j).getNombre().equals(nombre)) {
+                                            directorios.get(i).getListaU().remove(j);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            adminD.cargarArchivo();
+            adminD.setListaDir(directorios);
+            adminD.escribirArchivo();
+
+            JOptionPane.showMessageDialog(this, "Usuario eliminado");
+
+            DefaultTableModel modelo
+                    = (DefaultTableModel) jTable1.getModel();
+            modelo.removeRow(jTable1.getSelectedRow());
+            jTable1.setModel(modelo);
+        }
+    }//GEN-LAST:event_jButton5MouseClicked
+
+    private void jButton6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseClicked
+        //CREAR TABLA
+        String nombreDir = nodo_seleccionado.getUserObject().toString();
+
+        AdminTabla admT = new AdminTabla("./" + nombreDir + "./" + jTextField_nombreTabla.getText() + ".txt");
+
+        admT.addListaT(new Tabla(jTextField_nombreTabla.getText(), jLabel12.getText(), "s"));
+        Date fecha = new Date();
+        admT.getListaT().get(0).setFechaFormato(fecha);
+        try {
+            admT.escribirArchivo();
+            DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(admT.getListaT().get(0).getNombre());
+
+            nodo_seleccionado.add(_tabla);
+            modeloARBOL.reload();
+
+            for (Directorios d : directorios) {
+                if (d.getDirectorio().getName().equals(nodo_seleccionado.getUserObject().toString())) {
+                    d.addTabla(admT.getListaT().get(0));
+                    adminD.cargarArchivo();
+                    adminD.setListaDir(directorios);
+                    adminD.escribirArchivo();
+                }
+            }
+            JOptionPane.showMessageDialog(this, "Tabla Creada");
+        } catch (IOException ex) {
+            Logger.getLogger(PaginaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }//GEN-LAST:event_jButton6MouseClicked
+
+    private void jTextField_nombreTablaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_nombreTablaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jTextField_nombreTablaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1029,18 +1175,22 @@ public class PaginaPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
+    private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton_;
     private javax.swing.JButton jButton_Guardar;
     private javax.swing.JDialog jDialog1_Login;
     private javax.swing.JDialog jDialog2_Registro;
     private javax.swing.JDialog jDialog3_CrearUsuario;
     private javax.swing.JDialog jDialog4_EliminarUsuario;
+    private javax.swing.JDialog jDialog5_CrearTabla;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1082,6 +1232,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField2_Contraseña;
     private javax.swing.JTextField jTextField_ContraCU;
     private javax.swing.JTextField jTextField_NombreCU;
+    private javax.swing.JTextField jTextField_nombreTabla;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JTree jTree_Bases;
     // End of variables declaration//GEN-END:variables
@@ -1092,4 +1243,5 @@ public class PaginaPrincipal extends javax.swing.JFrame {
     ArrayList<Directorios> directorios = new ArrayList();
     AdminDirectorio adminD = new AdminDirectorio("./Directorios.cmb");
     DefaultMutableTreeNode nodo_seleccionado;
+    ArrayList<Tabla> tablas = new ArrayList();
 }

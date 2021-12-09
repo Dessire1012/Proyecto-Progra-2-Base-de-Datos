@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class Directorios implements Serializable{
     private File directorio;
     private ArrayList <Usuarios> listaU = new ArrayList();
+    private ArrayList <Tabla> Tablas = new ArrayList();
 
     public Directorios() {
     }
@@ -37,6 +38,18 @@ public class Directorios implements Serializable{
     
     public void addU (Usuarios u){
         this.listaU.add(u);
+    }
+
+    public ArrayList<Tabla> getTablas() {
+        return Tablas;
+    }
+
+    public void setTablas(ArrayList<Tabla> Tablas) {
+        this.Tablas = Tablas;
+    }
+    
+    public void addTabla(Tabla t){
+        this.Tablas.add(t);
     }
 
     @Override

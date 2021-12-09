@@ -7,6 +7,7 @@ package Proyecto;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -40,13 +41,20 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         adminD.getListaDir();
 
         directorios = adminD.getListaDir();
+        System.out.println(directorios);
 
         if (!adminD.getListaDir().isEmpty()) {
             modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
             raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
-
+            
             for (Directorios direc : adminD.getListaDir()) {
                 DefaultMutableTreeNode _base = new DefaultMutableTreeNode(direc);
+                if (!direc.getTablas().isEmpty()) {  
+                    for (Tabla tabla : direc.getTablas()) {
+                        DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(tabla.getNombre());
+                        _base.add(_tabla);
+                    }
+                }
                 raiz.add(_base);
                 modeloARBOL.reload();
 
@@ -811,6 +819,8 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                     jMenuItem4_Eliminar.setEnabled(true);
                 }
 
+                adminD.cargarArchivo();
+
                 for (Directorios d : adminD.getListaDir()) {
                     for (Usuarios usuariosDir : d.getListaU()) {
                         if (usuariosDir.getNombre().equals(usuario)) {
@@ -847,7 +857,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
 
                     ArrayList<Usuarios> u = new ArrayList();
                     u.add(usuario);
-                    directorios.add(new Directorios(dir, u));
+                    directorios.add(new Directorios(dir, u, tablas));
                     adminD.setListaDir(directorios);
                     adminD.escribirArchivo();
 
@@ -944,6 +954,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         jMenuItem_Logout.setEnabled(false);
         jMenuItem_Login.setEnabled(true);
         jMenu_CrearBase.setEnabled(false);
+        jMenuItem4_Eliminar.setEnabled(false);
 
         if (jMenuItem_CrearUsuario.isEnabled()) {
             jMenuItem_CrearUsuario.setEnabled(false);
@@ -954,25 +965,31 @@ public class PaginaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_jMenuItem_LogoutActionPerformed
 
     private void jTree_BasesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree_BasesMouseClicked
-        if (evt.isMetaDown()) {
-            //seleccionar un nodo con click derecho
-            int row = jTree_Bases.getClosestRowForLocation(
-                    evt.getX(), evt.getY());
-            jTree_Bases.setSelectionRow(row);
-            Object v1 = jTree_Bases.getSelectionPath().getLastPathComponent();
-            nodo_seleccionado = (DefaultMutableTreeNode) v1;
-
-            if (nodo_seleccionado.getUserObject() instanceof Directorios) {
-                Directorios directorio_Seleccionado = (Directorios) nodo_seleccionado.getUserObject();
-                jPopupMenu_Jtree.show(evt.getComponent(),
+        //ABRIR POPUPMENU
+        
+        if (!jLabel12.getText().equals("_")) {
+            if (evt.isMetaDown()) {
+                //seleccionar un nodo con click derecho
+                int row = jTree_Bases.getClosestRowForLocation(
                         evt.getX(), evt.getY());
-            }
+                jTree_Bases.setSelectionRow(row);
+                Object v1 = jTree_Bases.getSelectionPath().getLastPathComponent();
+                nodo_seleccionado = (DefaultMutableTreeNode) v1;
 
+                if (nodo_seleccionado.getUserObject() instanceof Directorios) {
+                    Directorios directorio_Seleccionado = (Directorios) nodo_seleccionado.getUserObject();
+                    jPopupMenu_Jtree.show(evt.getComponent(),
+                            evt.getX(), evt.getY());
+                }
+
+            }
         }
+
     }//GEN-LAST:event_jTree_BasesMouseClicked
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
-
+        //ELIMINAR BASE
+        
         adminD.cargarArchivo();
         adminD.getListaDir();
         boolean permiso = false;
@@ -1103,10 +1120,11 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         String nombreDir = nodo_seleccionado.getUserObject().toString();
 
         AdminTabla admT = new AdminTabla("./" + nombreDir + "./" + jTextField_nombreTabla.getText() + ".txt");
-
-        admT.addListaT(new Tabla(jTextField_nombreTabla.getText(), jLabel12.getText(), "s"));
+        
         Date fecha = new Date();
-        admT.getListaT().get(0).setFechaFormato(fecha);
+        SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy");
+        admT.addListaT(new Tabla(jTextField_nombreTabla.getText(), jLabel12.getText(), sd.format(fecha)));
+  
         try {
             admT.escribirArchivo();
             DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(admT.getListaT().get(0).getNombre());
@@ -1115,14 +1133,19 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             modeloARBOL.reload();
 
             for (Directorios d : directorios) {
-                if (d.getDirectorio().getName().equals(nodo_seleccionado.getUserObject().toString())) {
+                if (d.getDirectorio().getName().equals(nombreDir)) {
                     d.addTabla(admT.getListaT().get(0));
-                    adminD.cargarArchivo();
-                    adminD.setListaDir(directorios);
-                    adminD.escribirArchivo();
                 }
             }
+            
+            adminD.cargarArchivo();
+            adminD.setListaDir(directorios);
+            adminD.escribirArchivo();
+            JOptionPane.showMessageDialog(this, directorios.get(0).getTablas());
+
             JOptionPane.showMessageDialog(this, "Tabla Creada");
+            jTextField_nombreTabla.setText("");
+
         } catch (IOException ex) {
             Logger.getLogger(PaginaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }

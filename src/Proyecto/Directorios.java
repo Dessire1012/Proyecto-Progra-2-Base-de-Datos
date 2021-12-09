@@ -15,9 +15,10 @@ public class Directorios implements Serializable{
     
     private static final long SerialVersionUID=444L;
 
-    public Directorios(File directorio, ArrayList listaU) {
+    public Directorios(File directorio, ArrayList listaU, ArrayList Tablas) {
         this.directorio = directorio;
         this.listaU = listaU;
+        this.Tablas = Tablas;
     }
 
     public ArrayList<Usuarios> getListaU() {

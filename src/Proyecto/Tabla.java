@@ -1,10 +1,11 @@
 
 package Proyecto;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Tabla {
+public class Tabla implements Serializable{
     private String nombre;
     private String creador;
     private String fecha_creacion;
@@ -14,7 +15,8 @@ public class Tabla {
         this.creador = creador;
         this.fecha_creacion = fecha_creacion;
     }
-
+    
+     private static final long SerialVersionUID=444L;
     public Tabla() {
     }
 

@@ -951,7 +951,6 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 }
 
                 login = true;
-
             }
         }
 
@@ -977,7 +976,6 @@ public class PaginaPrincipal extends javax.swing.JFrame {
 
                 for (Usuarios usuario : usuarios) {
                     if (usuario.getNombre().equals(jLabel12.getText())) {
-
                         ArrayList<Usuarios> u = new ArrayList();
                         u.add(usuario);
                         directorios.add(new Directorios(dir, u, tablas));
@@ -989,14 +987,11 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 boolean fueCreado = dir.mkdir();
 
                 if (fueCreado) {
-                    JOptionPane.showMessageDialog(this,
-                            "Base de datos creado exitosamente");
+                    JOptionPane.showMessageDialog(this, "Base de datos creado exitosamente");
 
                     DefaultMutableTreeNode _base = new DefaultMutableTreeNode(fileChooser.getSelectedFile().getName());
-
                     raiz.add(_base);
                     modeloARBOL.reload();
-
                     jLabel13.setText(fileChooser.getSelectedFile().getName());
 
                 } else {
@@ -1286,50 +1281,110 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         String texto = jTextPane1.getText();
         Scanner sc = new Scanner(texto);
         sc.useDelimiter(" ");
+        String sentencia1 = null;
+        String sentencia2 = null;
+        String sentencia3 = null;
+
         while (sc.hasNext()) {
-            if (sc.next().equals("CREATE") && sc.next().equals("DATABASE")) {
-                String nombre = sc.next();
+            sentencia1 = sc.next();
+            sentencia2 = sc.next();
+            sentencia3 = sc.next();
+        }
 
-                File carpeta = new File("./" + nombre);
+        if (sentencia1.equals("CREATE") && sentencia2.equals("DATABASE")) {
+            String nombre = sentencia3;
 
+            File carpeta = new File("./" + nombre);
+
+            modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
+            raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
+
+            adminD.cargarArchivo();
+
+            for (Usuarios usuario : usuarios) {
+                if (usuario.getNombre().equals(jLabel12.getText())) {
+
+                    ArrayList<Usuarios> u = new ArrayList();
+                    u.add(usuario);
+                    directorios.add(new Directorios(carpeta, u, tablas));
+                    adminD.setListaDir(directorios);
+                    adminD.escribirArchivo();
+                }
+            }
+
+            if (!carpeta.exists()) {
+                carpeta.mkdir();
+                JOptionPane.showMessageDialog(null, "Carpeta creada con exito");
+            } else {
+                JOptionPane.showMessageDialog(null, "ERROR: Carpeta ya existe");
+            }
+
+            for (Directorios dir : directorios) {
+                if (dir.getDirectorio().getName().equals(nombre)) {
+                    DefaultMutableTreeNode _base = new DefaultMutableTreeNode(dir);
+                    raiz.add(_base);
+                    modeloARBOL.reload();
+                }
+
+            }
+
+            jLabel13.setText(nombre);
+        }
+
+        if (sentencia1.equals("DROP") && sentencia2.equals("DATABASE")) {
+            String nombre = sentencia3;
+            adminD.cargarArchivo();
+            adminD.getListaDir();
+            boolean permiso = false;
+
+            for (Directorios directorio : adminD.getListaDir()) {
+                if (directorio.getDirectorio().getName().equals(nombre)) {
+                    for (Usuarios usuario : directorio.getListaU()) {
+                        if (usuario.getNombre().equals(jLabel12.getText())) {
+                            permiso = true;
+                            if (usuario.isDelete() == true) {
+                                JOptionPane.showMessageDialog(this, "Base Eliminada");
+                                for (int i = 0; i < directorios.size(); i++) {
+                                    if (directorios.get(i).getDirectorio().getName().equals(directorio.getDirectorio().getName())) {
+                                        directorios.get(i).getDirectorio().delete();
+                                        directorios.remove(i);
+                                    }
+                                }
+                                jLabel13.setText("_");
+
+                            } else {
+                                JOptionPane.showMessageDialog(this, "Usted no tiene permiso para borrar la Base");
+                            }
+                        }
+                    }
+                }
+            }
+
+            adminD.setListaDir(directorios);
+            adminD.escribirArchivo();
+
+            raiz.removeAllChildren();
+            if (!adminD.getListaDir().isEmpty()) {
                 modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
                 raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
 
-                adminD.cargarArchivo();
-
-                for (Usuarios usuario : usuarios) {
-                    if (usuario.getNombre().equals(jLabel12.getText())) {
-
-                        ArrayList<Usuarios> u = new ArrayList();
-                        u.add(usuario);
-                        directorios.add(new Directorios(carpeta, u, tablas));
-                        adminD.setListaDir(directorios);
-                        adminD.escribirArchivo();
+                for (Directorios direc : adminD.getListaDir()) {
+                    DefaultMutableTreeNode _base = new DefaultMutableTreeNode(direc);
+                    if (!direc.getTablas().isEmpty()) {
+                        for (Tabla tabla : direc.getTablas()) {
+                            DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(tabla.getNombre());
+                            _base.add(_tabla);
+                        }
                     }
-                }
-
-                if (!carpeta.exists()) {
-                    carpeta.mkdir();
-                    JOptionPane.showMessageDialog(null, "Carpeta creada con exito");
-                } else {
-                    JOptionPane.showMessageDialog(null, "ERROR: Carpeta ya existe");
-                }
-
-                for (Directorios dir : directorios) {
-                    if (dir.getDirectorio().getName().equals(nombre)) {
-                        DefaultMutableTreeNode _base = new DefaultMutableTreeNode(dir);
-                        raiz.add(_base);
-                        modeloARBOL.reload();
-                    }
+                    raiz.add(_base);
+                    modeloARBOL.reload();
 
                 }
-
-                jLabel13.setText(nombre);
             }
 
-            /*if(sc.next().equals("DROP")){
-                
-            }*/
+            if (permiso == false) {
+                JOptionPane.showMessageDialog(this, "Usted no tiene acceso a esta Base");
+            }
         }
 
         jTextPane1.setText("");

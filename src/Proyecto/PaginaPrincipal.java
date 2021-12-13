@@ -1,22 +1,23 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Proyecto;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JTextPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -31,6 +32,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
      */
     public PaginaPrincipal() {
         initComponents();
+        colors();
         this.setExtendedState(MAXIMIZED_BOTH);
         adminU.cargarArchivo();
         adminU.getListaU();
@@ -41,15 +43,14 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         adminD.getListaDir();
 
         directorios = adminD.getListaDir();
-        System.out.println(directorios);
 
         if (!adminD.getListaDir().isEmpty()) {
             modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
             raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
-            
+
             for (Directorios direc : adminD.getListaDir()) {
                 DefaultMutableTreeNode _base = new DefaultMutableTreeNode(direc);
-                if (!direc.getTablas().isEmpty()) {  
+                if (!direc.getTablas().isEmpty()) {
                     for (Tabla tabla : direc.getTablas()) {
                         DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(tabla.getNombre());
                         _base.add(_tabla);
@@ -60,6 +61,79 @@ public class PaginaPrincipal extends javax.swing.JFrame {
 
             }
         }
+
+    }
+
+    private int UltimoCaracter(String texto, int index) {
+        while (--index >= 0) {
+            //  \\W = [A-Za-Z0-9]
+            if (String.valueOf(texto.charAt(index)).matches("\\W")) {
+                break;
+            }
+        }
+        return index;
+    }
+
+    private int PrimerCaracter(String texto, int index) {
+        while (index < texto.length()) {
+            if (String.valueOf(texto.charAt(index)).matches("\\W")) {
+                break;
+            }
+            index++;
+        }
+        return index;
+    }
+
+    private void colors() {
+
+        final StyleContext cont = StyleContext.getDefaultStyleContext();
+
+        //COLORES 
+        final AttributeSet attblue = cont.addAttribute(cont.getEmptySet(), StyleConstants.Foreground, new Color(0, 0, 255));
+
+        //STYLO 
+        DefaultStyledDocument doc = new DefaultStyledDocument() {
+            public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
+                super.insertString(offset, str, a);
+
+                String text = getText(0, getLength());
+                int before = UltimoCaracter(text, offset);
+                if (before < 0) {
+                    before = 0;
+                }
+                int after = PrimerCaracter(text, offset + str.length());
+                int wordL = before;
+                int wordR = before;
+
+                while (wordR <= after) {
+                    if (wordR == after || String.valueOf(text.charAt(wordR)).matches("\\W")) {
+                        if (text.substring(wordL, wordR).matches("(\\W)*(CREATE|DROP|"
+                                + "SELECT|FROM|WHERE|AND|OR|GRANT|DATABASE|TO|INSERT|"
+                                + "INTO|VALUES|TABLE|UPDATE|SET|DELETE|TRUNCATE)")) {
+                            setCharacterAttributes(wordL, wordR - wordL, attblue, false);
+                        }
+                        wordL = wordR;
+
+                    }
+                    wordR++;
+                }
+            }
+
+            public void romeve(int offs, int len) throws BadLocationException {
+                super.remove(offs, len);
+
+                String text = getText(0, getLength());
+                int before = UltimoCaracter(text, offs);
+                if (before < 0) {
+                    before = 0;
+                }
+            }
+        };
+
+        JTextPane txt = new JTextPane(doc);
+        String temp = jTextPane1.getText();
+        jTextPane1.setStyledDocument(txt.getStyledDocument());
+        jTextPane1.setText(temp);
     }
 
     /**
@@ -113,6 +187,10 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         jLabel16 = new javax.swing.JLabel();
         jButton6 = new javax.swing.JButton();
         jTextField_nombreTabla = new javax.swing.JTextField();
+        jDialog6_ListaSQL = new javax.swing.JDialog();
+        jLabel17 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTree_Bases = new javax.swing.JTree();
         jPanel1 = new javax.swing.JPanel();
@@ -125,8 +203,8 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         jToolBar1 = new javax.swing.JToolBar();
         jButton_ = new javax.swing.JButton();
         jButton_Guardar = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jTextPane1 = new javax.swing.JTextPane();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable = new javax.swing.JTable();
         jButton4 = new javax.swing.JButton();
@@ -474,12 +552,6 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             }
         });
 
-        jTextField_nombreTabla.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField_nombreTablaActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jDialog5_CrearTablaLayout = new javax.swing.GroupLayout(jDialog5_CrearTabla.getContentPane());
         jDialog5_CrearTabla.getContentPane().setLayout(jDialog5_CrearTablaLayout);
         jDialog5_CrearTablaLayout.setHorizontalGroup(
@@ -511,6 +583,39 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
                 .addComponent(jButton6)
                 .addGap(44, 44, 44))
+        );
+
+        jLabel17.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel17.setText("Lista Sentencias SQL");
+
+        jTextArea1.setEditable(false);
+        jTextArea1.setColumns(20);
+        jTextArea1.setFont(new java.awt.Font("Monospaced", 0, 14)); // NOI18N
+        jTextArea1.setRows(5);
+        jTextArea1.setText("CREATE DATABASE nombre_base_datos\n\nDROP DATABASE nombre_base_datos\n\nGRANT DATABASE nombre_base_da TO usuario\n\nCREATE TABLE nombre_tabla(campo1, campo2, campo3….campo-n)\n\nINSERT INTO nombre_tabla VALUES(valor1, valor2, valor3……valorn)\n\nSELECT campo1, campo2.. Campo-n FROM nombre_tabla (WHERE campox= algo)\n\nSELECT x.campo1, x.campo2, y.campo5 FROM tabla1 x, tabla2 y WHERE x.campo1=y.campo1\n\nUPDATE nombre_tabla SET Campox=algo WHERE campoy=algo\n\nDELETE FROM nombre_tabla WHERE campox=algo\n\nTRUNCATE TABLE Nombre_Tabla\n\nDROP TABLE nombre_tabla");
+        jScrollPane2.setViewportView(jTextArea1);
+
+        javax.swing.GroupLayout jDialog6_ListaSQLLayout = new javax.swing.GroupLayout(jDialog6_ListaSQL.getContentPane());
+        jDialog6_ListaSQL.getContentPane().setLayout(jDialog6_ListaSQLLayout);
+        jDialog6_ListaSQLLayout.setHorizontalGroup(
+            jDialog6_ListaSQLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog6_ListaSQLLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane2)
+                .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jDialog6_ListaSQLLayout.createSequentialGroup()
+                .addContainerGap(198, Short.MAX_VALUE)
+                .addComponent(jLabel17)
+                .addGap(190, 190, 190))
+        );
+        jDialog6_ListaSQLLayout.setVerticalGroup(
+            jDialog6_ListaSQLLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog6_ListaSQLLayout.createSequentialGroup()
+                .addGap(30, 30, 30)
+                .addComponent(jLabel17)
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 457, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -574,6 +679,11 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         jButton_.setFocusable(false);
         jButton_.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton_.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton_.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton_MouseClicked(evt);
+            }
+        });
         jToolBar1.add(jButton_);
 
         jButton_Guardar.setIcon(new javax.swing.ImageIcon("C:\\Users\\dessi\\Downloads\\Uni\\4 Semestre\\Programación II\\Progra2Proyecto\\Iconos\\icons8-guardar-16.png")); // NOI18N
@@ -581,25 +691,33 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         jButton_Guardar.setFocusable(false);
         jButton_Guardar.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton_Guardar.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton_Guardar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jButton_GuardarMouseClicked(evt);
+            }
+        });
         jToolBar1.add(jButton_Guardar);
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane2.setViewportView(jTextArea1);
+        jTextPane1.setEditable(false);
+        jScrollPane4.setViewportView(jTextPane1);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 873, Short.MAX_VALUE)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 873, Short.MAX_VALUE)
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 873, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE))
+                .addContainerGap(163, Short.MAX_VALUE))
+            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                    .addGap(0, 43, Short.MAX_VALUE)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         jTabbedPane1.addTab("SQL", jPanel2);
@@ -756,6 +874,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 jMenuItem_CrearUsuario.setEnabled(true);
                 jMenuItem4_Eliminar.setEnabled(true);
                 jLabel12.setText(usuario);
+                jTextPane1.setEditable(true);
             } catch (IOException ex) {
                 Logger.getLogger(PaginaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -786,6 +905,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                     jMenuItem_CrearUsuario.setEnabled(true);
                     jMenuItem4_Eliminar.setEnabled(true);
                     jLabel12.setText(usuario);
+                    jTextPane1.setEditable(true);
                 } catch (IOException ex) {
                     Logger.getLogger(PaginaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -813,6 +933,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 jMenuItem_Login.setEnabled(false);
                 jMenu_CrearBase.setEnabled(true);
                 jLabel12.setText(usuario);
+                jTextPane1.setEditable(true);
 
                 if (u.isGestionUsuarios() == true) {
                     jMenuItem_CrearUsuario.setEnabled(true);
@@ -842,45 +963,46 @@ public class PaginaPrincipal extends javax.swing.JFrame {
     private void jMenu_CrearBaseMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu_CrearBaseMouseClicked
         //CREAR BASE DE DATOS
 
-        JFileChooser fileChooser = new JFileChooser("./");
-        int seleccion = fileChooser.showSaveDialog(this);
-        modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
-        raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
+        if (!jLabel12.getText().equals("_")) {
 
-        if (seleccion == JFileChooser.APPROVE_OPTION) {
-            File dir = fileChooser.getSelectedFile();
+            JFileChooser fileChooser = new JFileChooser("./");
+            int seleccion = fileChooser.showSaveDialog(this);
+            modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
+            raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
 
-            adminD.cargarArchivo();
+            if (seleccion == JFileChooser.APPROVE_OPTION) {
+                File dir = fileChooser.getSelectedFile();
 
-            for (Usuarios usuario : usuarios) {
-                if (usuario.getNombre().equals(jLabel12.getText())) {
+                adminD.cargarArchivo();
 
-                    ArrayList<Usuarios> u = new ArrayList();
-                    u.add(usuario);
-                    directorios.add(new Directorios(dir, u, tablas));
-                    adminD.setListaDir(directorios);
-                    adminD.escribirArchivo();
+                for (Usuarios usuario : usuarios) {
+                    if (usuario.getNombre().equals(jLabel12.getText())) {
 
+                        ArrayList<Usuarios> u = new ArrayList();
+                        u.add(usuario);
+                        directorios.add(new Directorios(dir, u, tablas));
+                        adminD.setListaDir(directorios);
+                        adminD.escribirArchivo();
+                    }
                 }
-            }
 
-            boolean fueCreado = dir.mkdir();
+                boolean fueCreado = dir.mkdir();
 
-            if (fueCreado) {
-                JOptionPane.showMessageDialog(this,
-                        "Base de datos creado exitosamente");
-                //File nueva_base = new File(fileChooser.getSelectedFile().getPath() + ".txt");
+                if (fueCreado) {
+                    JOptionPane.showMessageDialog(this,
+                            "Base de datos creado exitosamente");
 
-                DefaultMutableTreeNode _base = new DefaultMutableTreeNode(fileChooser.getSelectedFile().getName());
+                    DefaultMutableTreeNode _base = new DefaultMutableTreeNode(fileChooser.getSelectedFile().getName());
 
-                raiz.add(_base);
-                modeloARBOL.reload();
+                    raiz.add(_base);
+                    modeloARBOL.reload();
 
-                jLabel13.setText(fileChooser.getSelectedFile().getName());
+                    jLabel13.setText(fileChooser.getSelectedFile().getName());
 
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "La Base de Datos no ha sido creada");
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "La Base de Datos no ha sido creada");
+                }
             }
         }
     }//GEN-LAST:event_jMenu_CrearBaseMouseClicked
@@ -966,30 +1088,29 @@ public class PaginaPrincipal extends javax.swing.JFrame {
 
     private void jTree_BasesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTree_BasesMouseClicked
         //ABRIR POPUPMENU
-        
-        if (!jLabel12.getText().equals("_")) {
-            if (evt.isMetaDown()) {
-                //seleccionar un nodo con click derecho
-                int row = jTree_Bases.getClosestRowForLocation(
+
+        if (evt.isMetaDown()) {
+            //seleccionar un nodo con click derecho
+            int row = jTree_Bases.getClosestRowForLocation(
+                    evt.getX(), evt.getY());
+            jTree_Bases.setSelectionRow(row);
+            Object v1 = jTree_Bases.getSelectionPath().getLastPathComponent();
+            nodo_seleccionado = (DefaultMutableTreeNode) v1;
+
+            if (nodo_seleccionado.getUserObject() instanceof Directorios) {
+                Directorios directorio_Seleccionado = (Directorios) nodo_seleccionado.getUserObject();
+                jPopupMenu_Jtree.show(evt.getComponent(),
                         evt.getX(), evt.getY());
-                jTree_Bases.setSelectionRow(row);
-                Object v1 = jTree_Bases.getSelectionPath().getLastPathComponent();
-                nodo_seleccionado = (DefaultMutableTreeNode) v1;
-
-                if (nodo_seleccionado.getUserObject() instanceof Directorios) {
-                    Directorios directorio_Seleccionado = (Directorios) nodo_seleccionado.getUserObject();
-                    jPopupMenu_Jtree.show(evt.getComponent(),
-                            evt.getX(), evt.getY());
-                }
-
             }
+
         }
+
 
     }//GEN-LAST:event_jTree_BasesMouseClicked
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         //ELIMINAR BASE
-        
+
         adminD.cargarArchivo();
         adminD.getListaDir();
         boolean permiso = false;
@@ -1120,11 +1241,11 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         String nombreDir = nodo_seleccionado.getUserObject().toString();
 
         AdminTabla admT = new AdminTabla("./" + nombreDir + "./" + jTextField_nombreTabla.getText() + ".txt");
-        
+
         Date fecha = new Date();
         SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy");
         admT.addListaT(new Tabla(jTextField_nombreTabla.getText(), jLabel12.getText(), sd.format(fecha)));
-  
+
         try {
             admT.escribirArchivo();
             DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(admT.getListaT().get(0).getNombre());
@@ -1137,7 +1258,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                     d.addTabla(admT.getListaT().get(0));
                 }
             }
-            
+
             adminD.cargarArchivo();
             adminD.setListaDir(directorios);
             adminD.escribirArchivo();
@@ -1152,9 +1273,67 @@ public class PaginaPrincipal extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jButton6MouseClicked
 
-    private void jTextField_nombreTablaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField_nombreTablaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField_nombreTablaActionPerformed
+    private void jButton_MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton_MouseClicked
+        //ABRIR LISTA SQL
+        jDialog6_ListaSQL.pack();
+        jDialog6_ListaSQL.setLocationRelativeTo(this);
+        jDialog6_ListaSQL.setModal(true);
+        jDialog6_ListaSQL.setVisible(true);
+
+    }//GEN-LAST:event_jButton_MouseClicked
+
+    private void jButton_GuardarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton_GuardarMouseClicked
+        String texto = jTextPane1.getText();
+        Scanner sc = new Scanner(texto);
+        sc.useDelimiter(" ");
+        while (sc.hasNext()) {
+            if (sc.next().equals("CREATE") && sc.next().equals("DATABASE")) {
+                String nombre = sc.next();
+
+                File carpeta = new File("./" + nombre);
+
+                modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
+                raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
+
+                adminD.cargarArchivo();
+
+                for (Usuarios usuario : usuarios) {
+                    if (usuario.getNombre().equals(jLabel12.getText())) {
+
+                        ArrayList<Usuarios> u = new ArrayList();
+                        u.add(usuario);
+                        directorios.add(new Directorios(carpeta, u, tablas));
+                        adminD.setListaDir(directorios);
+                        adminD.escribirArchivo();
+                    }
+                }
+
+                if (!carpeta.exists()) {
+                    carpeta.mkdir();
+                    JOptionPane.showMessageDialog(null, "Carpeta creada con exito");
+                } else {
+                    JOptionPane.showMessageDialog(null, "ERROR: Carpeta ya existe");
+                }
+
+                for (Directorios dir : directorios) {
+                    if (dir.getDirectorio().getName().equals(nombre)) {
+                        DefaultMutableTreeNode _base = new DefaultMutableTreeNode(dir);
+                        raiz.add(_base);
+                        modeloARBOL.reload();
+                    }
+
+                }
+
+                jLabel13.setText(nombre);
+            }
+
+            /*if(sc.next().equals("DROP")){
+                
+            }*/
+        }
+
+        jTextPane1.setText("");
+    }//GEN-LAST:event_jButton_GuardarMouseClicked
 
     /**
      * @param args the command line arguments
@@ -1206,6 +1385,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
     private javax.swing.JDialog jDialog3_CrearUsuario;
     private javax.swing.JDialog jDialog4_EliminarUsuario;
     private javax.swing.JDialog jDialog5_CrearTabla;
+    private javax.swing.JDialog jDialog6_ListaSQL;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -1214,6 +1394,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1244,6 +1425,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTable jTable;
@@ -1256,6 +1438,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField_ContraCU;
     private javax.swing.JTextField jTextField_NombreCU;
     private javax.swing.JTextField jTextField_nombreTabla;
+    private javax.swing.JTextPane jTextPane1;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JTree jTree_Bases;
     // End of variables declaration//GEN-END:variables

@@ -36,18 +36,18 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         this.setExtendedState(MAXIMIZED_BOTH);
         adminU.cargarArchivo();
         adminU.getListaU();
-
+        
         usuarios = adminU.getListaU();
-
+        
         adminD.cargarArchivo();
         adminD.getListaDir();
-
+        
         directorios = adminD.getListaDir();
-
+        
         if (!adminD.getListaDir().isEmpty()) {
             modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
             raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
-
+            
             for (Directorios direc : adminD.getListaDir()) {
                 DefaultMutableTreeNode _base = new DefaultMutableTreeNode(direc);
                 if (!direc.getTablas().isEmpty()) {
@@ -58,12 +58,12 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 }
                 raiz.add(_base);
                 modeloARBOL.reload();
-
+                
             }
         }
-
+        
     }
-
+    
     private int UltimoCaracter(String texto, int index) {
         while (--index >= 0) {
             //  \\W = [A-Za-Z0-9]
@@ -73,7 +73,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         }
         return index;
     }
-
+    
     private int PrimerCaracter(String texto, int index) {
         while (index < texto.length()) {
             if (String.valueOf(texto.charAt(index)).matches("\\W")) {
@@ -83,9 +83,9 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         }
         return index;
     }
-
+    
     private void colors() {
-
+        
         final StyleContext cont = StyleContext.getDefaultStyleContext();
 
         //COLORES 
@@ -95,7 +95,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         DefaultStyledDocument doc = new DefaultStyledDocument() {
             public void insertString(int offset, String str, AttributeSet a) throws BadLocationException {
                 super.insertString(offset, str, a);
-
+                
                 String text = getText(0, getLength());
                 int before = UltimoCaracter(text, offset);
                 if (before < 0) {
@@ -104,7 +104,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 int after = PrimerCaracter(text, offset + str.length());
                 int wordL = before;
                 int wordR = before;
-
+                
                 while (wordR <= after) {
                     if (wordR == after || String.valueOf(text.charAt(wordR)).matches("\\W")) {
                         if (text.substring(wordL, wordR).matches("(\\W)*(CREATE|DROP|"
@@ -113,15 +113,15 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                             setCharacterAttributes(wordL, wordR - wordL, attblue, false);
                         }
                         wordL = wordR;
-
+                        
                     }
                     wordR++;
                 }
             }
-
+            
             public void romeve(int offs, int len) throws BadLocationException {
                 super.remove(offs, len);
-
+                
                 String text = getText(0, getLength());
                 int before = UltimoCaracter(text, offs);
                 if (before < 0) {
@@ -129,7 +129,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 }
             }
         };
-
+        
         JTextPane txt = new JTextPane(doc);
         String temp = jTextPane1.getText();
         jTextPane1.setStyledDocument(txt.getStyledDocument());
@@ -639,8 +639,10 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         jLabel8.setText("Base de datos:");
 
+        jLabel12.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         jLabel12.setText("_");
 
+        jLabel13.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         jLabel13.setText("_");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -699,6 +701,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         jToolBar1.add(jButton_Guardar);
 
         jTextPane1.setEditable(false);
+        jTextPane1.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
         jScrollPane4.setViewportView(jTextPane1);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -856,14 +859,14 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         String usuario = jTextField1_UsuarioR.getText();
         String contraseña = jTextField2_ContraR.getText();
         boolean registrar = false;
-
+        
         if (usuarios.isEmpty()) {
-
+            
             try {
                 usuarios.add(new Usuarios(usuario, contraseña, true, true, true, true, true, true));
                 adminU.setListaU(usuarios);
                 adminU.escribirArchivo();
-
+                
                 jDialog2_Registro.setVisible(false);
                 jTextField1_UsuarioR.setText("");
                 jTextField2_ContraR.setText("");
@@ -878,7 +881,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(PaginaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+            
         } else {
             adminU.cargarArchivo();
             for (Usuarios usu : adminU.getListaU()) {
@@ -886,7 +889,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                     registrar = true;
                 }
             }
-
+            
             if (registrar == false) {
                 JOptionPane.showMessageDialog(this, "Ese nombre ya esta en uso");
             } else {
@@ -894,7 +897,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                     usuarios.add(new Usuarios(usuario, contraseña, true, true, true, true, true, true));
                     adminU.setListaU(usuarios);
                     adminU.escribirArchivo();
-
+                    
                     jDialog2_Registro.setVisible(false);
                     jTextField1_UsuarioR.setText("");
                     jTextField2_ContraR.setText("");
@@ -911,7 +914,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 }
             }
         }
-
+        
 
     }//GEN-LAST:event_jButton2MouseClicked
 
@@ -921,10 +924,10 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         String usuario = jTextField1_Usuario.getText();
         String contra = jTextField2_Contraseña.getText();
         boolean login = false;
-
+        
         for (Usuarios u : usuarios) {
             if (usuario.equals(u.getNombre()) && contra.equals(u.getContraseña())) {
-
+                
                 jDialog1_Login.setVisible(false);
                 jTextField1_Usuario.setText("");
                 jTextField2_Contraseña.setText("");
@@ -934,14 +937,14 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 jMenu_CrearBase.setEnabled(true);
                 jLabel12.setText(usuario);
                 jTextPane1.setEditable(true);
-
+                
                 if (u.isGestionUsuarios() == true) {
                     jMenuItem_CrearUsuario.setEnabled(true);
                     jMenuItem4_Eliminar.setEnabled(true);
                 }
-
+                
                 adminD.cargarArchivo();
-
+                
                 for (Directorios d : adminD.getListaDir()) {
                     for (Usuarios usuariosDir : d.getListaU()) {
                         if (usuariosDir.getNombre().equals(usuario)) {
@@ -949,11 +952,11 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                         }
                     }
                 }
-
+                
                 login = true;
             }
         }
-
+        
         if (login == false) {
             JOptionPane.showMessageDialog(this, "Usuario no encontrado");
         }
@@ -963,17 +966,17 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         //CREAR BASE DE DATOS
 
         if (!jLabel12.getText().equals("_")) {
-
+            
             JFileChooser fileChooser = new JFileChooser("./");
             int seleccion = fileChooser.showSaveDialog(this);
             modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
             raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
-
+            
             if (seleccion == JFileChooser.APPROVE_OPTION) {
                 File dir = fileChooser.getSelectedFile();
-
+                
                 adminD.cargarArchivo();
-
+                
                 for (Usuarios usuario : usuarios) {
                     if (usuario.getNombre().equals(jLabel12.getText())) {
                         ArrayList<Usuarios> u = new ArrayList();
@@ -983,17 +986,17 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                         adminD.escribirArchivo();
                     }
                 }
-
+                
                 boolean fueCreado = dir.mkdir();
-
+                
                 if (fueCreado) {
                     JOptionPane.showMessageDialog(this, "Base de datos creado exitosamente");
-
+                    
                     DefaultMutableTreeNode _base = new DefaultMutableTreeNode(fileChooser.getSelectedFile().getName());
                     raiz.add(_base);
                     modeloARBOL.reload();
                     jLabel13.setText(fileChooser.getSelectedFile().getName());
-
+                    
                 } else {
                     JOptionPane.showMessageDialog(this,
                             "La Base de Datos no ha sido creada");
@@ -1023,14 +1026,14 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         boolean delete = jRadioButton_Delete.isSelected();
         boolean drop = jRadioButton_Drop.isSelected();
         boolean creado = false;
-
+        
         adminU.cargarArchivo();
         for (Usuarios usuario : adminU.getListaU()) {
             if (!usuario.getNombre().equals(nombre)) {
                 creado = true;
             }
         }
-
+        
         if (creado) {
             usuarios.add(new Usuarios(nombre, contraseña, gestionU, create, select, insert, delete, drop));
             adminU.setListaU(usuarios);
@@ -1039,7 +1042,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(PaginaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
             }
-
+            
             jTextField_NombreCU.setText("");
             jTextField_ContraCU.setText("");
             jRadioButton_GU.setSelected(false);
@@ -1048,12 +1051,12 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             jRadioButton_Insert.setSelected(false);
             jRadioButton_Delete.setSelected(false);
             jRadioButton_Drop.setSelected(false);
-
+            
             JOptionPane.showMessageDialog(this, "Usuario creado");
         } else {
             JOptionPane.showMessageDialog(this, "Ese nombre ya esta en uso");
         }
-
+        
         adminD.cargarArchivo();
         for (Directorios d : adminD.getListaDir()) {
             if (d.getDirectorio().getName().equals(jLabel13.getText())) {
@@ -1061,7 +1064,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 adminD.escribirArchivo();
             }
         }
-
+        
 
     }//GEN-LAST:event_jButton3MouseClicked
 
@@ -1072,11 +1075,11 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         jMenuItem_Login.setEnabled(true);
         jMenu_CrearBase.setEnabled(false);
         jMenuItem4_Eliminar.setEnabled(false);
-
+        
         if (jMenuItem_CrearUsuario.isEnabled()) {
             jMenuItem_CrearUsuario.setEnabled(false);
         }
-
+        
         jLabel12.setText("_");
         jLabel13.setText("_");
     }//GEN-LAST:event_jMenuItem_LogoutActionPerformed
@@ -1091,15 +1094,15 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             jTree_Bases.setSelectionRow(row);
             Object v1 = jTree_Bases.getSelectionPath().getLastPathComponent();
             nodo_seleccionado = (DefaultMutableTreeNode) v1;
-
+            
             if (nodo_seleccionado.getUserObject() instanceof Directorios) {
                 Directorios directorio_Seleccionado = (Directorios) nodo_seleccionado.getUserObject();
                 jPopupMenu_Jtree.show(evt.getComponent(),
                         evt.getX(), evt.getY());
             }
-
+            
         }
-
+        
 
     }//GEN-LAST:event_jTree_BasesMouseClicked
 
@@ -1109,7 +1112,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         adminD.cargarArchivo();
         adminD.getListaDir();
         boolean permiso = false;
-
+        
         for (Directorios directorio : adminD.getListaDir()) {
             if (directorio.getDirectorio().getName().equals(((Directorios) nodo_seleccionado.getUserObject()).getDirectorio().getName())) {
                 for (Usuarios usuario : directorio.getListaU()) {
@@ -1131,7 +1134,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 }
             }
         }
-
+        
         adminD.setListaDir(directorios);
         adminD.escribirArchivo();
         if (permiso == false) {
@@ -1165,14 +1168,14 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         boolean permiso = false;
         DefaultTableModel tablaM = (DefaultTableModel) jTable1.getModel();
         tablaM.setRowCount(0);
-
+        
         for (Directorios drctr : adminD.getListaDir()) {
             if (drctr.getDirectorio().getName().equals(jLabel13.getText())) {
                 for (Usuarios us : drctr.getListaU()) {
                     Object[] newrow = {us.getNombre(), us.getContraseña()};
-
+                    
                     tablaM.addRow(newrow);
-
+                    
                     if (jLabel12.getText().equals(us.getNombre())) {
                         if (us.isGestionUsuarios() == true) {
                             permiso = true;
@@ -1181,7 +1184,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 }
             }
         }
-
+        
         if (permiso) {
             jDialog4_EliminarUsuario.pack();
             jDialog4_EliminarUsuario.setLocationRelativeTo(this);
@@ -1190,7 +1193,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         } else {
             JOptionPane.showMessageDialog(this, "Usted no tiene permiso para eliminar usuarios");
         }
-
+        
 
     }//GEN-LAST:event_jMenuItem4_EliminarActionPerformed
 
@@ -1199,7 +1202,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         if (jTable1.getSelectedRow() >= 0) {
             String nombre = (String) (jTable1.getValueAt(jTable1.getSelectedRow(), 0));
             String contraseña = (String) (jTable1.getValueAt(jTable1.getSelectedRow(), 1));
-
+            
             for (Directorios drctr : adminD.getListaDir()) {
                 if (drctr.getDirectorio().getName().equals(jLabel13.getText())) {
                     for (Usuarios us : drctr.getListaU()) {
@@ -1217,13 +1220,13 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                     }
                 }
             }
-
+            
             adminD.cargarArchivo();
             adminD.setListaDir(directorios);
             adminD.escribirArchivo();
-
+            
             JOptionPane.showMessageDialog(this, "Usuario eliminado");
-
+            
             DefaultTableModel modelo
                     = (DefaultTableModel) jTable1.getModel();
             modelo.removeRow(jTable1.getSelectedRow());
@@ -1234,34 +1237,34 @@ public class PaginaPrincipal extends javax.swing.JFrame {
     private void jButton6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseClicked
         //CREAR TABLA
         String nombreDir = nodo_seleccionado.getUserObject().toString();
-
+        
         AdminTabla admT = new AdminTabla("./" + nombreDir + "./" + jTextField_nombreTabla.getText() + ".txt");
-
+        
         Date fecha = new Date();
         SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy");
         admT.addListaT(new Tabla(jTextField_nombreTabla.getText(), jLabel12.getText(), sd.format(fecha)));
-
+        
         try {
             admT.escribirArchivo();
             DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(admT.getListaT().get(0).getNombre());
-
+            
             nodo_seleccionado.add(_tabla);
             modeloARBOL.reload();
-
+            
             for (Directorios d : directorios) {
                 if (d.getDirectorio().getName().equals(nombreDir)) {
                     d.addTabla(admT.getListaT().get(0));
                 }
             }
-
+            
             adminD.cargarArchivo();
             adminD.setListaDir(directorios);
             adminD.escribirArchivo();
             JOptionPane.showMessageDialog(this, directorios.get(0).getTablas());
-
+            
             JOptionPane.showMessageDialog(this, "Tabla Creada");
             jTextField_nombreTabla.setText("");
-
+            
         } catch (IOException ex) {
             Logger.getLogger(PaginaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -1284,26 +1287,38 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         String sentencia1 = null;
         String sentencia2 = null;
         String sentencia3 = null;
-
-        while (sc.hasNext()) {
+        String sentencia4 = null;
+        String sentencia5 = null;
+        String sentencia6 = null;
+        
+        if (sc.hasNext()) {
             sentencia1 = sc.next();
             sentencia2 = sc.next();
             sentencia3 = sc.next();
+            if (sc.hasNext()) {
+                sentencia4 = sc.next();
+            }
+            if (sc.hasNext()) {
+                sentencia5 = sc.next();
+            }
+            if (sc.hasNext()) {
+                sentencia6 = sc.next();
+            }
         }
-
+        
         if (sentencia1.equals("CREATE") && sentencia2.equals("DATABASE")) {
             String nombre = sentencia3;
-
+            
             File carpeta = new File("./" + nombre);
-
+            
             modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
             raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
-
+            
             adminD.cargarArchivo();
-
+            
             for (Usuarios usuario : usuarios) {
                 if (usuario.getNombre().equals(jLabel12.getText())) {
-
+                    
                     ArrayList<Usuarios> u = new ArrayList();
                     u.add(usuario);
                     directorios.add(new Directorios(carpeta, u, tablas));
@@ -1311,32 +1326,32 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                     adminD.escribirArchivo();
                 }
             }
-
+            
             if (!carpeta.exists()) {
                 carpeta.mkdir();
                 JOptionPane.showMessageDialog(null, "Carpeta creada con exito");
             } else {
                 JOptionPane.showMessageDialog(null, "ERROR: Carpeta ya existe");
             }
-
+            
             for (Directorios dir : directorios) {
                 if (dir.getDirectorio().getName().equals(nombre)) {
                     DefaultMutableTreeNode _base = new DefaultMutableTreeNode(dir);
                     raiz.add(_base);
                     modeloARBOL.reload();
                 }
-
+                
             }
-
+            
             jLabel13.setText(nombre);
         }
-
+        
         if (sentencia1.equals("DROP") && sentencia2.equals("DATABASE")) {
             String nombre = sentencia3;
             adminD.cargarArchivo();
             adminD.getListaDir();
             boolean permiso = false;
-
+            
             for (Directorios directorio : adminD.getListaDir()) {
                 if (directorio.getDirectorio().getName().equals(nombre)) {
                     for (Usuarios usuario : directorio.getListaU()) {
@@ -1351,7 +1366,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                                     }
                                 }
                                 jLabel13.setText("_");
-
+                                
                             } else {
                                 JOptionPane.showMessageDialog(this, "Usted no tiene permiso para borrar la Base");
                             }
@@ -1359,15 +1374,15 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                     }
                 }
             }
-
+            
             adminD.setListaDir(directorios);
             adminD.escribirArchivo();
-
+            
             raiz.removeAllChildren();
             if (!adminD.getListaDir().isEmpty()) {
                 modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
                 raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
-
+                
                 for (Directorios direc : adminD.getListaDir()) {
                     DefaultMutableTreeNode _base = new DefaultMutableTreeNode(direc);
                     if (!direc.getTablas().isEmpty()) {
@@ -1378,15 +1393,35 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                     }
                     raiz.add(_base);
                     modeloARBOL.reload();
-
+                    
                 }
             }
-
+            
             if (permiso == false) {
                 JOptionPane.showMessageDialog(this, "Usted no tiene acceso a esta Base");
             }
         }
-
+        
+        if (sentencia1.equals("GRANT") && sentencia2.equals("DATABASE") && sentencia4.equals("TO")) {
+            for (Directorios d : directorios) {
+                if (d.getDirectorio().getName().equals(sentencia3)) {
+                    for (Usuarios usuario : usuarios) {
+                        if (usuario.getNombre().equals(sentencia5)) {
+                            d.addU(usuario);
+                        }
+                        
+                    }
+                }
+            }
+            
+            adminD.cargarArchivo();
+            adminD.setListaDir(directorios);
+            adminD.escribirArchivo();
+            
+            System.out.println(sentencia3);
+            System.out.println(sentencia5);
+        }
+        
         jTextPane1.setText("");
     }//GEN-LAST:event_jButton_GuardarMouseClicked
 

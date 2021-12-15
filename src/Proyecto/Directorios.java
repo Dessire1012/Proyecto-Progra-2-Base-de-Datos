@@ -40,6 +40,10 @@ public class Directorios implements Serializable{
     public void addU (Usuarios u){
         this.listaU.add(u);
     }
+    
+    public void addT (Tabla t){
+        this.Tablas.add(t);
+    }
 
     public ArrayList<Tabla> getTablas() {
         return Tablas;

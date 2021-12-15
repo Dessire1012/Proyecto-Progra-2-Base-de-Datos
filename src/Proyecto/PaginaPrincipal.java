@@ -47,6 +47,18 @@ public class PaginaPrincipal extends javax.swing.JFrame {
 
         directorios = adminD.getListaDir();
 
+        for (Directorios direc : adminD.getListaDir()) {
+            if (!direc.getTablas().isEmpty()) {
+                for (Tabla t : direc.getTablas()) {
+                    adminsT.add(new AdminTabla(t.getDirectorio()));
+                }
+
+                for (int i = 0; i < direc.getTablas().size(); i++) {
+                    adminsT.get(i).setListaT(direc.getTablas());
+                }
+            }
+        }
+
         if (!adminD.getListaDir().isEmpty()) {
             modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
             raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
@@ -55,13 +67,12 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 DefaultMutableTreeNode _base = new DefaultMutableTreeNode(direc);
                 if (!direc.getTablas().isEmpty()) {
                     for (Tabla tabla : direc.getTablas()) {
-                        DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(tabla.getNombre());
+                        DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(tabla);
                         _base.add(_tabla);
                     }
                 }
                 raiz.add(_base);
                 modeloARBOL.reload();
-
             }
         }
 
@@ -210,7 +221,6 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         jTextPane1 = new javax.swing.JTextPane();
         jScrollPane3 = new javax.swing.JScrollPane();
         jTable = new javax.swing.JTable();
-        jButton4 = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu_Usuarios = new javax.swing.JMenu();
         jMenuItem_Login = new javax.swing.JMenuItem();
@@ -730,18 +740,13 @@ public class PaginaPrincipal extends javax.swing.JFrame {
 
         jTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
         jScrollPane3.setViewportView(jTable);
-
-        jButton4.setText("Actualizar Tabla");
 
         jMenu_Usuarios.setIcon(new javax.swing.ImageIcon("C:\\Users\\dessi\\Downloads\\Uni\\4 Semestre\\Programación II\\Progra2Proyecto\\Iconos\\icons8-menú-de-usuario-femenino-16.png")); // NOI18N
         jMenu_Usuarios.setText("Usuarios");
@@ -813,8 +818,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jTabbedPane1)
-                    .addComponent(jScrollPane3)
-                    .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jScrollPane3))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -826,10 +830,8 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4)
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE))
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE))
                     .addComponent(jScrollPane1))
                 .addContainerGap())
         );
@@ -1103,6 +1105,37 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                 jPopupMenu_Jtree.show(evt.getComponent(),
                         evt.getX(), evt.getY());
             }
+        }
+
+        int row = jTree_Bases.getClosestRowForLocation(
+                evt.getX(), evt.getY());
+        jTree_Bases.setSelectionRow(row);
+        Object v1 = jTree_Bases.getSelectionPath().getLastPathComponent();
+        nodo_seleccionado = (DefaultMutableTreeNode) v1;
+
+        if (nodo_seleccionado.getUserObject() instanceof Tabla) {
+            Tabla tabla_Seleccionado = (Tabla) nodo_seleccionado.getUserObject();
+            JTableHeader tableHeader = jTable.getTableHeader();
+            TableColumnModel tableColumnModel = tableHeader.getColumnModel();
+            DefaultTableModel tablaModelo = (DefaultTableModel) jTable.getModel();
+            tablaModelo.setColumnCount(tabla_Seleccionado.getAtributos().size());
+            for (int i = 0; i < tabla_Seleccionado.getAtributos().size(); i++) {
+                TableColumn tableColumn = tableColumnModel.getColumn(i);
+                tableColumn.setHeaderValue(tabla_Seleccionado.getAtributos().get(i));
+            }
+
+            tableHeader.repaint();
+            tablaModelo.setRowCount(0);
+
+            if (!tabla_Seleccionado.getValues().isEmpty()) {
+                String[] newrow = new String[tabla_Seleccionado.getAtributos().size()];
+
+                for (int i = 0; i < tabla_Seleccionado.getAtributos().size(); i++) {
+                    newrow[i] = tabla_Seleccionado.getValues().get(i);
+                }
+                tablaModelo.addRow(newrow);
+
+            }
 
         }
 
@@ -1256,14 +1289,16 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         String nombreDir = nodo_seleccionado.getUserObject().toString();
 
         AdminTabla admT = new AdminTabla("./" + nombreDir + "./" + jTextField_nombreTabla.getText() + ".txt");
+        adminsT.add(admT);
 
         Date fecha = new Date();
         SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy");
         admT.addListaT(new Tabla(jTextField_nombreTabla.getText(), jLabel12.getText(), sd.format(fecha)));
+        admT.getListaT().get(0).setDirectorio("./" + nombreDir + "./" + jTextField_nombreTabla.getText() + ".txt");
 
         try {
             admT.escribirArchivo();
-            DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(admT.getListaT().get(0).getNombre());
+            DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(admT.getListaT().get(0));
 
             nodo_seleccionado.add(_tabla);
             modeloARBOL.reload();
@@ -1300,35 +1335,14 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         String texto = jTextPane1.getText();
         Scanner sc = new Scanner(texto);
         sc.useDelimiter(" ");
+        ArrayList<String> sentencias = new ArrayList();
 
-        String sentencia1 = null;
-        String sentencia2 = null;
-        String sentencia3 = null;
-        String sentencia4 = null;
-        String sentencia5 = null;
-        String sentencia6 = null;
-        String sentencia7 = null;
-
-        if (sc.hasNext()) {
-            sentencia1 = sc.next();
-            sentencia2 = sc.next();
-            sentencia3 = sc.next();
-            if (sc.hasNext()) {
-                sentencia4 = sc.next();                
-            }
-            if (sc.hasNext()) {
-                sentencia5 = sc.next();       
-            }
-            if (sc.hasNext()) {
-                sentencia6 = sc.next();
-            }
-            if (sc.hasNext()) {
-                sentencia7 = sc.next();
-            }
+        while (sc.hasNext()) {
+            sentencias.add(sc.next());
         }
 
-        if (sentencia1.equals("CREATE") && sentencia2.equals("DATABASE")) {
-            String nombre = sentencia3;
+        if (sentencias.get(0).equals("CREATE") && sentencias.get(1).equals("DATABASE")) {
+            String nombre = sentencias.get(2);
 
             File carpeta = new File("./" + nombre);
             if (!carpeta.exists()) {
@@ -1365,8 +1379,8 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             }
         }
 
-        if (sentencia1.equals("DROP") && sentencia2.equals("DATABASE")) {
-            String nombre = sentencia3;
+        if (sentencias.get(0).equals("DROP") && sentencias.get(1).equals("DATABASE")) {
+            String nombre = sentencias.get(2);
             adminD.cargarArchivo();
             adminD.getListaDir();
             boolean permiso = false;
@@ -1433,14 +1447,13 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             }
         }
 
-        if (sentencia1.equals("GRANT") && sentencia2.equals("DATABASE") && sentencia4.equals("TO")) {
+        if (sentencias.get(0).equals("GRANT") && sentencias.get(1).equals("DATABASE") && sentencias.get(3).equals("TO")) {
             for (Directorios d : directorios) {
-                if (d.getDirectorio().getName().equals(sentencia3)) {
+                if (d.getDirectorio().getName().equals(sentencias.get(2))) {
                     for (Usuarios usuario : usuarios) {
-                        if (usuario.getNombre().equals(sentencia5)) {
+                        if (usuario.getNombre().equals(sentencias.get(4))) {
                             d.addU(usuario);
                         }
-
                     }
                 }
             }
@@ -1450,15 +1463,17 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             adminD.escribirArchivo();
         }
 
-        if (sentencia1.equals("CREATE") && sentencia2.equals("TABLE") && sentencia4 == null) {
+        if (sentencias.get(0).equals("CREATE") && sentencias.get(1).equals("TABLE") && sentencias.size() == 3) {
 
             String nombreDir = jLabel13.getText();
 
-            AdminTabla admT = new AdminTabla("./" + nombreDir + "./" + sentencia3 + ".txt");
+            AdminTabla admT = new AdminTabla("./" + nombreDir + "./" + sentencias.get(2) + ".txt");
+            adminsT.add(admT);
 
             Date fecha = new Date();
             SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy");
-            admT.addListaT(new Tabla(sentencia3, jLabel12.getText(), sd.format(fecha)));
+            admT.addListaT(new Tabla(sentencias.get(2), jLabel12.getText(), sd.format(fecha)));
+            admT.getListaT().get(0).setDirectorio("./" + nombreDir + "./" + sentencias.get(2) + ".txt");
 
             try {
                 admT.escribirArchivo();
@@ -1482,7 +1497,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                         DefaultMutableTreeNode _base = new DefaultMutableTreeNode(direc);
                         if (!direc.getTablas().isEmpty()) {
                             for (Tabla tabla : direc.getTablas()) {
-                                DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(tabla.getNombre());
+                                DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(tabla);
                                 _base.add(_tabla);
                                 raiz.add(_base);
                                 modeloARBOL.reload();
@@ -1500,37 +1515,28 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             }
         }
 
-        if (sentencia1.equals("CREATE") && sentencia2.equals("TABLE") && sentencia4 != null) {
+        if (sentencias.get(0).equals("CREATE") && sentencias.get(1).equals("TABLE") && sentencias.size() > 3) {
             String nombreDir = jLabel13.getText();
 
-            AdminTabla admT = new AdminTabla("./" + nombreDir + "./" + sentencia3 + ".txt");
+            AdminTabla admT = new AdminTabla("./" + nombreDir + "./" + sentencias.get(2) + ".txt");
+            adminsT.add(admT);
 
             Date fecha = new Date();
             SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy");
-            admT.addListaT(new Tabla(sentencia3, jLabel12.getText(), sd.format(fecha)));
+            admT.addListaT(new Tabla(sentencias.get(2), jLabel12.getText(), sd.format(fecha)));
+            admT.getListaT().get(0).setDirectorio("./" + nombreDir + "./" + sentencias.get(2) + ".txt");
 
-            StringBuilder NuevaS4 = new StringBuilder(sentencia4);
+            StringBuilder NuevaS4 = new StringBuilder(sentencias.get(3));
             NuevaS4.deleteCharAt(0);
-            NuevaS4.deleteCharAt(sentencia4.length()-2);
-            
+            NuevaS4.deleteCharAt(sentencias.get(3).length() - 2);
+
             admT.getListaT().get(0).addAtributo(NuevaS4.toString());
 
-            if (sentencia5 != null) {
-                StringBuilder NuevaS5 = new StringBuilder(sentencia5);
-                NuevaS5.deleteCharAt(sentencia5.length()-1);
-                admT.getListaT().get(0).addAtributo(NuevaS5.toString());
-            }
-
-            if (sentencia6 != null) {
-                StringBuilder NuevaS6 = new StringBuilder(sentencia6);
-                NuevaS6.deleteCharAt(sentencia6.length()-1);
-                admT.getListaT().get(0).addAtributo(NuevaS6.toString());
-            }
-
-            if (sentencia7 != null) {
-                StringBuilder NuevaS7 = new StringBuilder(sentencia7);
-                NuevaS7.deleteCharAt(sentencia7.length()-1);
-                admT.getListaT().get(0).addAtributo(NuevaS7.toString());
+            //SENTENCIAS!!
+            for (int i = 4; i < sentencias.size(); i++) {
+                StringBuilder NuevaS = new StringBuilder(sentencias.get(i));
+                NuevaS.deleteCharAt(sentencias.get(i).length() - 1);
+                admT.getListaT().get(0).addAtributo(NuevaS.toString());
             }
 
             try {
@@ -1555,7 +1561,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                         DefaultMutableTreeNode _base = new DefaultMutableTreeNode(direc);
                         if (!direc.getTablas().isEmpty()) {
                             for (Tabla tabla : direc.getTablas()) {
-                                DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(tabla.getNombre());
+                                DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(tabla);
                                 _base.add(_tabla);
                                 raiz.add(_base);
                                 modeloARBOL.reload();
@@ -1571,23 +1577,111 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(PaginaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
             }
+
             JTableHeader tableHeader = jTable.getTableHeader();
             TableColumnModel tableColumnModel = tableHeader.getColumnModel();
-            
-
             DefaultTableModel tablaModelo = (DefaultTableModel) jTable.getModel();
             tablaModelo.setColumnCount(admT.getListaT().get(0).getAtributos().size());
             for (int i = 0; i < admT.getListaT().get(0).getAtributos().size(); i++) {
                 TableColumn tableColumn = tableColumnModel.getColumn(i);
                 tableColumn.setHeaderValue(admT.getListaT().get(0).getAtributos().get(i));
-                
+
             }
 
             tableHeader.repaint();
 
         }
 
-        if (sentencia1.equals("DROP") && sentencia2.equals("TABLE")) {
+        if (sentencias.get(0).equals("INSERT") && sentencias.get(1).equals("INTO") && sentencias.get(3).equals("VALUES")) {
+            boolean permiso = false;
+            boolean insert = false;
+            int num = sentencias.size() - 4;
+            String[] newrow = new String[num];
+
+            adminD.cargarArchivo();
+            for (Directorios directorio : directorios) {
+                if (directorio.getDirectorio().getName().equals(jLabel13.getText())) {
+                    for (Usuarios usuario : directorio.getListaU()) {
+                        if (usuario.getNombre().equals(jLabel12.getText())) {
+                            permiso = true;
+                            if (usuario.isInsert() == true) {
+                                insert = true;
+                                for (Tabla tabla : directorio.getTablas()) {
+
+                                    if (tabla.getNombre().equals(sentencias.get(2))) {
+
+                                        StringBuilder NuevaS5 = new StringBuilder(sentencias.get(4));
+                                        NuevaS5.deleteCharAt(0);
+                                        NuevaS5.deleteCharAt(sentencias.get(4).length() - 2);
+                                        tabla.addValue(NuevaS5.toString());
+                                        newrow[0] = NuevaS5.toString();
+
+                                        for (int i = 5; i < sentencias.size(); i++) {
+                                            StringBuilder NuevaS = new StringBuilder(sentencias.get(i));
+                                            NuevaS.deleteCharAt(sentencias.get(i).length() - 1);
+                                            tabla.addValue(NuevaS.toString());
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            adminD.setListaDir(directorios);
+            adminD.escribirArchivo();
+
+            for (AdminTabla adminTabla : adminsT) {
+                if (adminTabla.getListaT().get(0).toString().equals(sentencias.get(2))) {
+                    for (Directorios d : directorios) {
+                        if (d.getDirectorio().getName().equals(jLabel13.getText())) {
+                            adminTabla.setListaT(d.getTablas());
+                            try {
+                                adminTabla.escribirArchivo();
+                                System.out.println(adminTabla.getListaT().get(0).getValues());
+                            } catch (IOException ex) {
+                                Logger.getLogger(PaginaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    }
+                }
+            }
+            DefaultTableModel tablaModelo = (DefaultTableModel) jTable.getModel();
+            tablaModelo.setRowCount(0);
+
+            for (AdminTabla adminTabla : adminsT) {
+                if (adminTabla.getListaT().get(0).toString().equals(sentencias.get(2))) {
+                    for (Directorios d : directorios) {
+                        if (d.getDirectorio().getName().equals(jLabel13.getText())) {
+                            if (!adminTabla.getListaT().get(0).getValues().isEmpty()) {
+                                newrow = new String[adminTabla.getListaT().get(0).getAtributos().size()];
+
+                                for (int i = 0; i < adminTabla.getListaT().get(0).getAtributos().size(); i++) {
+
+                                    newrow[i] = adminTabla.getListaT().get(0).getValues().get(i);
+
+                                }
+                                tablaModelo.addRow(newrow);
+
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            if (permiso == false) {
+                JOptionPane.showMessageDialog(this, "Usted no tiene acceso a esta Base");
+            }
+
+            if (insert == false) {
+                JOptionPane.showMessageDialog(this, "Usted no puede insertar en esta Base de datos");
+            }
+
+        }
+
+        if (sentencias.get(0).equals("DROP") && sentencias.get(1).equals("TABLE")) {
             for (Directorios dir : directorios) {
                 if (dir.getDirectorio().getName().equals(jLabel13.getText())) {
                     for (Usuarios usuario : usuarios) {
@@ -1600,7 +1694,12 @@ public class PaginaPrincipal extends javax.swing.JFrame {
 
                                 } else if (resp == JOptionPane.YES_OPTION) {
                                     for (int i = 0; i < dir.getTablas().size(); i++) {
-                                        if (dir.getTablas().get(i).getNombre().equals(sentencia3)) {
+                                        if (dir.getTablas().get(i).getNombre().equals(sentencias.get(2))) {
+                                            for (AdminTabla aT : adminsT) {
+                                                if (aT.getListaT().get(0).equals(dir.getTablas().get(i).getNombre())) {
+                                                    aT.getArchivo().delete();
+                                                }
+                                            }
                                             dir.getTablas().remove(i);
                                         }
                                     }
@@ -1681,7 +1780,6 @@ public class PaginaPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton jButton1_login;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton_;
@@ -1756,4 +1854,6 @@ public class PaginaPrincipal extends javax.swing.JFrame {
     AdminDirectorio adminD = new AdminDirectorio("./Directorios.cmb");
     DefaultMutableTreeNode nodo_seleccionado;
     ArrayList<Tabla> tablas = new ArrayList();
+    ArrayList<AdminTabla> adminsT = new ArrayList();
+
 }

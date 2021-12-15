@@ -1,6 +1,7 @@
 
 package Proyecto;
 
+import java.io.File;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +12,8 @@ public class Tabla implements Serializable{
     private String creador;
     private String fecha_creacion;
     private ArrayList <String> Atributos = new ArrayList();
+    private ArrayList <String> Values = new ArrayList();
+    private String directorio;
 
     public Tabla(String nombre, String creador, String fecha_creacion) {
         this.nombre = nombre;
@@ -24,6 +27,26 @@ public class Tabla implements Serializable{
 
     public void setAtributos(ArrayList<String> Atributos) {
         this.Atributos = Atributos;
+    }
+
+    public ArrayList<String> getValues() {
+        return Values;
+    }
+
+    public void setValues(ArrayList<String> Values) {
+        this.Values = Values;
+    }
+    
+    public void addValue(String v){
+        this.Values.add(v);
+    }
+
+    public String getDirectorio() {
+        return directorio;
+    }
+
+    public void setDirectorio(String directorio) {
+        this.directorio = directorio;
     }
     
      private static final long SerialVersionUID=444L;
@@ -65,7 +88,7 @@ public class Tabla implements Serializable{
 
     @Override
     public String toString() {
-        return "Tabla{" + "nombre=" + nombre + ", creador=" + creador + ", fecha_creacion=" + fecha_creacion + '}';
+        return  nombre;
     }
     
     

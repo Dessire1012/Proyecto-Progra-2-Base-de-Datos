@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Scanner;
 
 public class AdminTabla {
@@ -52,10 +51,19 @@ public class AdminTabla {
                 bw.write("Creador: " + t.getCreador() + ";");
                 bw.newLine();
                 bw.write("Fecha de creacion: " + t.getFecha_creacion() + ";");
-                if(!t.getAtributos().isEmpty()){
+                if (!t.getAtributos().isEmpty()) {
                     bw.newLine();
                     for (String atributo : t.getAtributos()) {
                         bw.write(atributo + ",");
+                    }
+                }
+                if (!t.getValues().isEmpty()) {
+                    bw.newLine();
+                    bw.newLine();
+                    bw.write("Detalle;");
+                    bw.newLine();
+                    for (String v : t.getValues()) {
+                        bw.write(v + ",");
                     }
                 }
 
@@ -79,7 +87,7 @@ public class AdminTabla {
                     sc.next();
                     listaT.add(new Tabla(sc.next(),
                             sc.next(),
-                            sc.next()                          
+                            sc.next()
                     )
                     );
                 }

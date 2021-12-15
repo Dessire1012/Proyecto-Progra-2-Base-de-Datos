@@ -58,6 +58,10 @@ public class Tabla implements Serializable{
     public void setFecha_creacion(String fecha_creacion) {
         this.fecha_creacion = fecha_creacion;
     }
+    
+    public void addAtributo(String a){
+        this.Atributos.add(a);
+    }
 
     @Override
     public String toString() {

@@ -13,6 +13,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
@@ -1297,6 +1300,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         String texto = jTextPane1.getText();
         Scanner sc = new Scanner(texto);
         sc.useDelimiter(" ");
+
         String sentencia1 = null;
         String sentencia2 = null;
         String sentencia3 = null;
@@ -1310,10 +1314,10 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             sentencia2 = sc.next();
             sentencia3 = sc.next();
             if (sc.hasNext()) {
-                sentencia4 = sc.next();
+                sentencia4 = sc.next();                
             }
             if (sc.hasNext()) {
-                sentencia5 = sc.next();
+                sentencia5 = sc.next();       
             }
             if (sc.hasNext()) {
                 sentencia6 = sc.next();
@@ -1446,7 +1450,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             adminD.escribirArchivo();
         }
 
-        if (sentencia1.equals("CREATE") && sentencia2.equals("TABLE")) {
+        if (sentencia1.equals("CREATE") && sentencia2.equals("TABLE") && sentencia4 == null) {
 
             String nombreDir = jLabel13.getText();
 
@@ -1494,6 +1498,92 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(PaginaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+
+        if (sentencia1.equals("CREATE") && sentencia2.equals("TABLE") && sentencia4 != null) {
+            String nombreDir = jLabel13.getText();
+
+            AdminTabla admT = new AdminTabla("./" + nombreDir + "./" + sentencia3 + ".txt");
+
+            Date fecha = new Date();
+            SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy");
+            admT.addListaT(new Tabla(sentencia3, jLabel12.getText(), sd.format(fecha)));
+
+            StringBuilder NuevaS4 = new StringBuilder(sentencia4);
+            NuevaS4.deleteCharAt(0);
+            NuevaS4.deleteCharAt(sentencia4.length()-2);
+            
+            admT.getListaT().get(0).addAtributo(NuevaS4.toString());
+
+            if (sentencia5 != null) {
+                StringBuilder NuevaS5 = new StringBuilder(sentencia5);
+                NuevaS5.deleteCharAt(sentencia5.length()-1);
+                admT.getListaT().get(0).addAtributo(NuevaS5.toString());
+            }
+
+            if (sentencia6 != null) {
+                StringBuilder NuevaS6 = new StringBuilder(sentencia6);
+                NuevaS6.deleteCharAt(sentencia6.length()-1);
+                admT.getListaT().get(0).addAtributo(NuevaS6.toString());
+            }
+
+            if (sentencia7 != null) {
+                StringBuilder NuevaS7 = new StringBuilder(sentencia7);
+                NuevaS7.deleteCharAt(sentencia7.length()-1);
+                admT.getListaT().get(0).addAtributo(NuevaS7.toString());
+            }
+
+            try {
+                admT.escribirArchivo();
+
+                for (Directorios d : directorios) {
+                    if (d.getDirectorio().getName().equals(nombreDir)) {
+                        d.addTabla(admT.getListaT().get(0));
+                    }
+                }
+
+                adminD.cargarArchivo();
+                adminD.setListaDir(directorios);
+                adminD.escribirArchivo();
+
+                raiz.removeAllChildren();
+                if (!adminD.getListaDir().isEmpty()) {
+                    modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
+                    raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
+
+                    for (Directorios direc : adminD.getListaDir()) {
+                        DefaultMutableTreeNode _base = new DefaultMutableTreeNode(direc);
+                        if (!direc.getTablas().isEmpty()) {
+                            for (Tabla tabla : direc.getTablas()) {
+                                DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(tabla.getNombre());
+                                _base.add(_tabla);
+                                raiz.add(_base);
+                                modeloARBOL.reload();
+                            }
+                        }
+
+                    }
+                }
+
+                JOptionPane.showMessageDialog(this, "Tabla Creada");
+                jTextField_nombreTabla.setText("");
+
+            } catch (IOException ex) {
+                Logger.getLogger(PaginaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            JTableHeader tableHeader = jTable.getTableHeader();
+            TableColumnModel tableColumnModel = tableHeader.getColumnModel();
+            
+
+            DefaultTableModel tablaModelo = (DefaultTableModel) jTable.getModel();
+            tablaModelo.setColumnCount(admT.getListaT().get(0).getAtributos().size());
+            for (int i = 0; i < admT.getListaT().get(0).getAtributos().size(); i++) {
+                TableColumn tableColumn = tableColumnModel.getColumn(i);
+                tableColumn.setHeaderValue(admT.getListaT().get(0).getAtributos().get(i));
+                
+            }
+
+            tableHeader.repaint();
 
         }
 

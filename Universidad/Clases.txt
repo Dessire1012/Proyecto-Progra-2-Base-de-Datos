@@ -2,3 +2,4 @@
 Nombre: Clases;
 Creador: Mantequilla;
 Fecha de creacion: 14/12/2021;
+Nombre,Maestro,

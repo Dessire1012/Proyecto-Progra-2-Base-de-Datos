@@ -53,8 +53,9 @@ public class AdminTabla {
                 bw.newLine();
                 bw.write("Fecha de creacion: " + t.getFecha_creacion() + ";");
                 if(!t.getAtributos().isEmpty()){
+                    bw.newLine();
                     for (String atributo : t.getAtributos()) {
-                        bw.write(atributo+",");
+                        bw.write(atributo + ",");
                     }
                 }
 

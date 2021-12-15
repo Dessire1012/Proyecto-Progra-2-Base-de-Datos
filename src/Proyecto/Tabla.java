@@ -3,17 +3,27 @@ package Proyecto;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 public class Tabla implements Serializable{
     private String nombre;
     private String creador;
     private String fecha_creacion;
+    private ArrayList <String> Atributos = new ArrayList();
 
     public Tabla(String nombre, String creador, String fecha_creacion) {
         this.nombre = nombre;
         this.creador = creador;
         this.fecha_creacion = fecha_creacion;
+    }
+
+    public ArrayList<String> getAtributos() {
+        return Atributos;
+    }
+
+    public void setAtributos(ArrayList<String> Atributos) {
+        this.Atributos = Atributos;
     }
     
      private static final long SerialVersionUID=444L;

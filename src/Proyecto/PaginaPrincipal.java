@@ -621,7 +621,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Página Principal");
 
-        jTree_Bases.setFont(new java.awt.Font("Tahoma", 0, 15)); // NOI18N
+        jTree_Bases.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
         javax.swing.tree.DefaultMutableTreeNode treeNode1 = new javax.swing.tree.DefaultMutableTreeNode("Bases de datos");
         jTree_Bases.setModel(new javax.swing.tree.DefaultTreeModel(treeNode1));
         jTree_Bases.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -1061,9 +1061,9 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         for (Directorios d : adminD.getListaDir()) {
             if (d.getDirectorio().getName().equals(jLabel13.getText())) {
                 d.getListaU().add(new Usuarios(nombre, contraseña, gestionU, create, select, insert, delete, drop));
-                adminD.escribirArchivo();
             }
         }
+        adminD.escribirArchivo();
 
 
     }//GEN-LAST:event_jButton3MouseClicked
@@ -1303,6 +1303,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
         String sentencia4 = null;
         String sentencia5 = null;
         String sentencia6 = null;
+        String sentencia7 = null;
 
         if (sc.hasNext()) {
             sentencia1 = sc.next();
@@ -1317,39 +1318,47 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             if (sc.hasNext()) {
                 sentencia6 = sc.next();
             }
+            if (sc.hasNext()) {
+                sentencia7 = sc.next();
+            }
         }
 
         if (sentencia1.equals("CREATE") && sentencia2.equals("DATABASE")) {
             String nombre = sentencia3;
 
             File carpeta = new File("./" + nombre);
+            if (!carpeta.exists()) {
+                if (carpeta.mkdirs()) {
+                    modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
+                    raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
 
-            modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
-            raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
+                    adminD.cargarArchivo();
 
-            adminD.cargarArchivo();
+                    for (Usuarios usuario : usuarios) {
+                        if (usuario.getNombre().equals(jLabel12.getText())) {
 
-            for (Usuarios usuario : usuarios) {
-                if (usuario.getNombre().equals(jLabel12.getText())) {
+                            ArrayList<Usuarios> u = new ArrayList();
+                            u.add(usuario);
+                            directorios.add(new Directorios(carpeta, u, tablas));
+                            adminD.setListaDir(directorios);
+                            adminD.escribirArchivo();
+                        }
+                    }
 
-                    ArrayList<Usuarios> u = new ArrayList();
-                    u.add(usuario);
-                    directorios.add(new Directorios(carpeta, u, tablas));
-                    adminD.setListaDir(directorios);
-                    adminD.escribirArchivo();
+                    for (Directorios dir : directorios) {
+                        if (dir.getDirectorio().getName().equals(nombre)) {
+                            DefaultMutableTreeNode _base = new DefaultMutableTreeNode(dir);
+                            raiz.add(_base);
+                            modeloARBOL.reload();
+                        }
+
+                    }
+
+                    jLabel13.setText(nombre);
+                } else {
+
                 }
             }
-
-            for (Directorios dir : directorios) {
-                if (dir.getDirectorio().getName().equals(nombre)) {
-                    DefaultMutableTreeNode _base = new DefaultMutableTreeNode(dir);
-                    raiz.add(_base);
-                    modeloARBOL.reload();
-                }
-
-            }
-
-            jLabel13.setText(nombre);
         }
 
         if (sentencia1.equals("DROP") && sentencia2.equals("DATABASE")) {
@@ -1357,6 +1366,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             adminD.cargarArchivo();
             adminD.getListaDir();
             boolean permiso = false;
+            boolean borrar = false;
 
             for (Directorios directorio : adminD.getListaDir()) {
                 if (directorio.getDirectorio().getName().equals(nombre)) {
@@ -1364,6 +1374,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                         if (usuario.getNombre().equals(jLabel12.getText())) {
                             permiso = true;
                             if (usuario.isDelete() == true) {
+                                borrar = true;
 
                                 int resp = JOptionPane.showConfirmDialog(this, "Eliminar Base", "Confirmar",
                                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -1379,6 +1390,7 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                                     }
                                     jLabel13.setText("_");
 
+                                    adminD.cargarArchivo();
                                     adminD.setListaDir(directorios);
                                     adminD.escribirArchivo();
 
@@ -1393,17 +1405,15 @@ public class PaginaPrincipal extends javax.swing.JFrame {
                                                 for (Tabla tabla : direc.getTablas()) {
                                                     DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(tabla.getNombre());
                                                     _base.add(_tabla);
+                                                    raiz.add(_base);
+                                                    modeloARBOL.reload();
                                                 }
                                             }
-                                            raiz.add(_base);
-                                            modeloARBOL.reload();
 
                                         }
                                     }
-                                }
 
-                            } else {
-                                JOptionPane.showMessageDialog(this, "Usted no tiene permiso para borrar la Base");
+                                }
                             }
                         }
                     }
@@ -1412,6 +1422,10 @@ public class PaginaPrincipal extends javax.swing.JFrame {
 
             if (permiso == false) {
                 JOptionPane.showMessageDialog(this, "Usted no tiene acceso a esta Base");
+            }
+
+            if (borrar == false) {
+                JOptionPane.showMessageDialog(this, "Usted no tiene permiso para borrar la Base");
             }
         }
 
@@ -1430,6 +1444,56 @@ public class PaginaPrincipal extends javax.swing.JFrame {
             adminD.cargarArchivo();
             adminD.setListaDir(directorios);
             adminD.escribirArchivo();
+        }
+
+        if (sentencia1.equals("CREATE") && sentencia2.equals("TABLE")) {
+
+            String nombreDir = jLabel13.getText();
+
+            AdminTabla admT = new AdminTabla("./" + nombreDir + "./" + sentencia3 + ".txt");
+
+            Date fecha = new Date();
+            SimpleDateFormat sd = new SimpleDateFormat("dd/MM/yyyy");
+            admT.addListaT(new Tabla(sentencia3, jLabel12.getText(), sd.format(fecha)));
+
+            try {
+                admT.escribirArchivo();
+
+                for (Directorios d : directorios) {
+                    if (d.getDirectorio().getName().equals(nombreDir)) {
+                        d.addTabla(admT.getListaT().get(0));
+                    }
+                }
+
+                adminD.cargarArchivo();
+                adminD.setListaDir(directorios);
+                adminD.escribirArchivo();
+
+                raiz.removeAllChildren();
+                if (!adminD.getListaDir().isEmpty()) {
+                    modeloARBOL = (DefaultTreeModel) jTree_Bases.getModel();
+                    raiz = (DefaultMutableTreeNode) modeloARBOL.getRoot();
+
+                    for (Directorios direc : adminD.getListaDir()) {
+                        DefaultMutableTreeNode _base = new DefaultMutableTreeNode(direc);
+                        if (!direc.getTablas().isEmpty()) {
+                            for (Tabla tabla : direc.getTablas()) {
+                                DefaultMutableTreeNode _tabla = new DefaultMutableTreeNode(tabla.getNombre());
+                                _base.add(_tabla);
+                                raiz.add(_base);
+                                modeloARBOL.reload();
+                            }
+                        }
+
+                    }
+                }
+
+                JOptionPane.showMessageDialog(this, "Tabla Creada");
+                jTextField_nombreTabla.setText("");
+
+            } catch (IOException ex) {
+                Logger.getLogger(PaginaPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
         }
 

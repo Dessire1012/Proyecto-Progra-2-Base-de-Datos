@@ -52,6 +52,11 @@ public class AdminTabla {
                 bw.write("Creador: " + t.getCreador() + ";");
                 bw.newLine();
                 bw.write("Fecha de creacion: " + t.getFecha_creacion() + ";");
+                if(!t.getAtributos().isEmpty()){
+                    for (String atributo : t.getAtributos()) {
+                        bw.write(atributo+",");
+                    }
+                }
 
             }
 
@@ -73,7 +78,7 @@ public class AdminTabla {
                     sc.next();
                     listaT.add(new Tabla(sc.next(),
                             sc.next(),
-                            sc.next()
+                            sc.next()                          
                     )
                     );
                 }
